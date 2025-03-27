@@ -1,16 +1,16 @@
-const express = require('express'); // Importa o Express
-const { getProducts, createProduct, updateProduct, deleteProduct } = require('../controllers/productController'); // Importa as funções do controlador de produtos
+const express = require('express');
+const { getProducts, createProduct, updateProduct, deleteProduct } = require('../controllers/productController'); // Ajuste o caminho conforme necessário
 
-const router = express.Router(); // Cria um roteador
+const router = express.Router();
 
 module.exports = (db) => {
-  // Rota para listar todos os produtos
+  // Rota para obter todos os produtos
   router.get('/', async (req, res, next) => {
     try {
-      const products = await getProducts(db); // Chama a função para obter produtos
-      res.json(products); // Retorna os produtos em formato JSON
+      const products = await getProducts(db);
+      res.status(200).json(products);
     } catch (error) {
-      next(error); // Passa o erro para o middleware de tratamento de erros
+      next(error);
     }
   });
 
@@ -18,33 +18,33 @@ module.exports = (db) => {
   router.post('/', async (req, res, next) => {
     try {
       const productData = req.body; // Obtém os dados do produto do corpo da requisição
-      const newProduct = await createProduct(db, productData); // Chama a função para criar o produto
-      res.status(201).json(newProduct); // Retorna o produto criado
+      const newProduct = await createProduct(db, productData);
+      res.status(201).json(newProduct);
     } catch (error) {
-      next(error); // Passa o erro para o middleware de tratamento de erros
+      next(error);
     }
   });
 
   // Rota para atualizar um produto existente
   router.put('/:id', async (req, res, next) => {
     try {
-      const productId = req.params.id; // Obtém o ID do produto da URL
+      const productId = req.params.id; // Obtém o ID do produto a ser atualizado
       const productData = req.body; // Obtém os dados do produto do corpo da requisição
-      const updatedProduct = await updateProduct(db, productId, productData); // Chama a função para atualizar o produto
-      res.json(updatedProduct); // Retorna os dados atualizados do produto
+      const updatedProduct = await updateProduct(db, productId, productData);
+      res.status(200).json(updatedProduct);
     } catch (error) {
-      next(error); // Passa o erro para o middleware de tratamento de erros
+      next(error);
     }
   });
 
   // Rota para deletar um produto
   router.delete('/:id', async (req, res, next) => {
     try {
-      const productId = req.params.id; // Obtém o ID do produto da URL
-      const result = await deleteProduct(db, productId); // Chama a função para deletar o produto
-      res.json(result); // Retorna a mensagem de sucesso
+      const productId = req.params.id; // Obtém o ID do produto a ser deletado
+      await deleteProduct(db, productId);
+      res.status(204).send(); // Retorna um status 204 sem conteúdo
     } catch (error) {
-      next(error); // Passa o erro para o middleware de tratamento de erros
+      next(error);
     }
   });
 

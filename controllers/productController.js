@@ -10,22 +10,44 @@ const getProducts = async (db) => {
 };
 
 const createProduct = async (db, productData) => {
-  // Função para criar um novo produto
   try {
-    const productRef = await db.collection('products').add(productData); // Adiciona o produto ao Firestore
-    return { id: productRef.id, ...productData }; // Retorna os dados do produto criado
+    const { id, nome, descricao, preco } = productData;
+
+    // Valida que todos os campos necessários estão presentes
+    if (!nome || !descricao || typeof preco !== 'number') {
+      throw { status: 400, message: 'Nome, descrição e preço são obrigatórios' };
+    }
+
+    const productRef = await db.collection('products').add({
+      nome,
+      descricao,
+      preco
+    });
+
+    return { id: productRef.id, nome, descricao, preco };
   } catch (error) {
-    throw { status: 500, message: 'Erro ao criar produto' }; // Captura erros
+    throw { status: 500, message: 'Erro ao criar produto' };
   }
 };
 
 const updateProduct = async (db, productId, productData) => {
-  // Função para atualizar um produto existente
   try {
-    await db.collection('products').doc(productId).update(productData); // Atualiza os dados do produto no Firestore
-    return { id: productId, ...productData }; // Retorna os dados atualizados do produto
+    const { nome, descricao, preco } = productData; // Desestrutura os dados do produto
+
+    // Valida que pelo menos um campo está presente para atualização
+    if (!nome && !descricao && typeof preco !== 'number') {
+      throw { status: 400, message: 'Pelo menos um dos campos nome, descrição ou preço deve ser fornecido' };
+    }
+
+    const updatedData = {};
+    if (nome) updatedData.nome = nome;
+    if (descricao) updatedData.descricao = descricao;
+    if (typeof preco === 'number') updatedData.preco = preco;
+
+    await db.collection('products').doc(productId).update(updatedData); // Atualiza os dados do produto no Firestore
+    return { id: productId, ...updatedData }; // Retorna os dados atualizados do produto
   } catch (error) {
-    throw { status: 500, message: 'Erro ao atualizar produto' }; // Captura erros
+    throw { status: 500, message: 'Erro ao atualizar produto' };
   }
 };
 

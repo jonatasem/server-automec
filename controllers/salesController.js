@@ -1,41 +1,60 @@
 const createSale = async (db, saleData) => {
-  // Função para criar uma nova venda
   try {
-    const { clientId, products } = saleData; // Desestrutura os dados da venda
-    const clientDoc = await db.collection('clientes').doc(clientId).get();
+    const { clienteId, data_emissao, data_faturamento, forma_pagamento, status, produtos } = saleData;
+
+    const clientDoc = await db.collection('clientes').doc(clienteId).get();
     if (!clientDoc.exists) {
-      throw { status: 400, message: 'Cliente não encontrado' }; // Lança um erro se o cliente não existir
+      console.error("Cliente não encontrado:", clienteId); // Log para erro específico
+      throw { status: 400, message: 'Cliente não encontrado' };
     }
 
+    const productsDetails = [];
     let totalSaleValue = 0;
-    const productsDetails = []; // Array para armazenar detalhes dos produtos
 
-    for (const productId of products) {
-      const productDoc = await db.collection('products').doc(productId).get();
+    for (const product of produtos) {
+      const productDoc = await db.collection('products').doc(product.id).get();
       if (productDoc.exists) {
         const productData = productDoc.data();
+        const valor_total = product.preco_unitario * product.quantidade;
+
         productsDetails.push({
           id: productDoc.id,
-          nome: productData.nome,
-          quantidade: 1, // Para simplicidade, assume-se uma quantidade de 1
-          preco_unitario: productData.preco,
-          valor_total: productData.preco,
+          descricao: product.descricao,
+          quantidade: product.quantidade,
+          preco_unitario: product.preco_unitario,
+          valor_total: valor_total
         });
-        totalSaleValue += productData.preco;
+
+        totalSaleValue += valor_total;
       } else {
-        throw { status: 400, message: `Produto com ID ${productId} não encontrado` };
+        console.error("Produto não encontrado:", product.id); // Log para erro específico
+        throw { status: 400, message: `Produto com ID ${product.id} não encontrado` };
       }
     }
 
     const saleRef = await db.collection('vendas').add({
-      clientId,
-      products: productsDetails,
-      totalValue: totalSaleValue,
-      createdAt: new Date(),
+      clienteId,
+      data_emissao,
+      data_faturamento,
+      forma_pagamento,
+      status,
+      produtos: productsDetails,
+      valor_total: totalSaleValue,
+      createdAt: new Date()
     });
 
-    return { id: saleRef.id, clientId, products: productsDetails, totalValue: totalSaleValue };
+    return {
+      id: saleRef.id,
+      clienteId,
+      data_emissao,
+      data_faturamento,
+      forma_pagamento,
+      status,
+      produtos: productsDetails,
+      valor_total: totalSaleValue
+    };
   } catch (error) {
+    console.error("Erro ao criar venda:", error); // Log do erro
     throw { status: 500, message: 'Erro ao criar venda' };
   }
 };
