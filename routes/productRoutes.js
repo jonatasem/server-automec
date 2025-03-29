@@ -1,5 +1,5 @@
 const express = require('express');
-const { getProducts, createProduct, updateProduct, deleteProduct } = require('../controllers/productController'); // Ajuste o caminho conforme necessário
+const { getProducts, createProduct, updateProduct, deleteProduct } = require('../controllers/productController');
 
 const router = express.Router();
 
@@ -18,7 +18,7 @@ module.exports = (db) => {
   router.post('/', async (req, res, next) => {
     try {
       const productData = req.body; // Obtém os dados do produto do corpo da requisição
-      const newProduct = await createProduct(db, productData);
+      const newProduct = await createProduct(db, productData); // Chama a função para criar ou atualizar o produto
       res.status(201).json(newProduct);
     } catch (error) {
       next(error);
