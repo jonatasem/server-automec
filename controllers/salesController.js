@@ -1,48 +1,72 @@
+// Função para criar uma nova venda
 const createSale = async (db, saleData) => {
   try {
+    // Desestrutura os dados da venda recebidos
     const { clienteId, data_emissao, data_faturamento, forma_pagamento, status, produtos } = saleData;
-
+    // Verifica se o cliente existe no banco de dados
     const clientDoc = await db.collection('clientes').doc(clienteId).get();
     if (!clientDoc.exists) {
-      console.error("Cliente não encontrado:", clienteId); // Log para erro específico
-      throw { status: 400, message: 'Cliente não encontrado' };
+      console.error("Cliente não encontrado:", clienteId); 
+      // Log para erro específico
+      throw { status: 400, message: 'Cliente não encontrado' }; 
+      // Lança erro se cliente não for encontrado
     }
 
-    const productsDetails = [];
-    let totalSaleValue = 0;
+    const productsDetails = []; 
+    // Array para armazenar detalhes dos produtos
+    let totalSaleValue = 0; 
+    // Variável para armazenar o valor total da venda
 
+    // Loop para processar cada produto na lista de produtos
     for (const product of produtos) {
-      const productDoc = await db.collection('products').doc(product.id).get();
-      if (productDoc.exists) {
-        const productData = productDoc.data();
-        const valor_total = product.preco_unitario * product.quantidade;
+      const productDoc = await db.collection('products').doc(product.id).get(); // Busca o produto no banco de dados
 
+      if (productDoc.exists) {
+        const productData = productDoc.data(); 
+        // Obtém os dados do produto
+        const valor_total = product.preco_unitario * product.quantidade; 
+        // Calcula o valor total do produto
+
+        // Adiciona os detalhes do produto ao array
         productsDetails.push({
           id: productDoc.id,
-          descricao: product.descricao,
-          quantidade: product.quantidade,
-          preco_unitario: product.preco_unitario,
-          valor_total: valor_total
+          descricao: productData.descricao, 
+          // Obtém descrição do produto
+          quantidade: product.quantidade, 
+          // Armazena a quantidade
+          preco_unitario: product.preco_unitario, 
+          // Armazena o preço unitário
+          valor_total: valor_total 
+          // Armazena o valor total do produto
         });
 
-        totalSaleValue += valor_total;
+        totalSaleValue += valor_total; 
+        // Acumula o valor total da venda
+
       } else {
-        console.error("Produto não encontrado:", product.id); // Log para erro específico
-        throw { status: 400, message: `Produto com ID ${product.id} não encontrado` };
+        console.error("Produto não encontrado:", product.id); 
+        // Log para erro específico
+        throw { status: 400, message: `Produto com ID ${product.id} não encontrado` }; 
+        // Lança erro se produto não for encontrado
       }
     }
 
+    // Adiciona a nova venda ao banco de dados
     const saleRef = await db.collection('vendas').add({
       clienteId,
       data_emissao,
       data_faturamento,
       forma_pagamento,
       status,
-      produtos: productsDetails,
-      valor_total: totalSaleValue,
-      createdAt: new Date()
+      produtos: productsDetails, 
+      // Adiciona detalhes dos produtos
+      valor_total: totalSaleValue, 
+      // Adiciona o valor total da venda
+      createdAt: new Date() 
+      // Armazena a data de criação da venda
     });
 
+    // Retorna os detalhes da nova venda criada
     return {
       id: saleRef.id,
       clienteId,
@@ -54,53 +78,68 @@ const createSale = async (db, saleData) => {
       valor_total: totalSaleValue
     };
   } catch (error) {
-    console.error("Erro ao criar venda:", error); // Log do erro
-    throw { status: 500, message: 'Erro ao criar venda' };
+    console.error("Erro ao criar venda:", error); 
+    // Log do erro
+    throw { status: 500, message: 'Erro ao criar venda' }; 
+    // Lança erro genérico em caso de falha
   }
 };
 
+// Função para obter todas as vendas
 const getSales = async (db) => {
-  // Função para obter todas as vendas
   try {
-    const salesSnapshot = await db.collection('vendas').get();
+    const salesSnapshot = await db.collection('vendas').get(); 
+    // Obtém todas as vendas do banco de dados
     const sales = salesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    return sales;
+    // Mapeia os documentos para um array de vendas com seus dados
+    return sales; 
+    // Retorna a lista de vendas
   } catch (error) {
-    throw { status: 500, message: 'Erro ao buscar vendas' };
+    throw { status: 500, message: 'Erro ao buscar vendas' }; 
+    // Lança erro genérico em caso de falha
   }
 };
 
+// Função para atualizar uma venda existente
 const updateSale = async (db, saleId, saleData) => {
-  // Função para atualizar uma venda existente
+
   try {
-    const saleRef = db.collection('vendas').doc(saleId);
-    const saleDoc = await saleRef.get();
-
+    const saleRef = db.collection('vendas').doc(saleId); 
+    // Referência ao documento da venda a ser atualizada
+    const saleDoc = await saleRef.get(); 
+    // Obtém o documento da venda
     if (!saleDoc.exists) {
-      throw { status: 404, message: 'Venda não encontrada' }; // Lança um erro se a venda não existir
+      throw { status: 404, message: 'Venda não encontrada' }; 
+      // Lança erro se a venda não existir
     }
-
-    await saleRef.update(saleData); // Atualiza a venda com os novos dados
-    return { id: saleId, ...saleData }; // Retorna os dados atualizados
+    await saleRef.update(saleData); 
+    // Atualiza a venda com os novos dados
+    return { id: saleId, ...saleData }; 
+    // Retorna os dados atualizados da venda
   } catch (error) {
-    throw { status: 500, message: 'Erro ao atualizar venda' };
+    throw { status: 500, message: 'Erro ao atualizar venda' }; 
+    // Lança erro genérico em caso de falha
   }
 };
 
+// Função para deletar uma venda
 const deleteSale = async (db, saleId) => {
-  // Função para deletar uma venda
   try {
-    const saleRef = db.collection('vendas').doc(saleId);
-    const saleDoc = await saleRef.get();
-
+    const saleRef = db.collection('vendas').doc(saleId); 
+    // Referência ao documento da venda a ser deletada
+    const saleDoc = await saleRef.get(); 
+    // Obtém o documento da venda
     if (!saleDoc.exists) {
-      throw { status: 404, message: 'Venda não encontrada' }; // Lança um erro se a venda não existir
+      throw { status: 404, message: 'Venda não encontrada' }; 
+      // Lança erro se a venda não existir
     }
-
-    await saleRef.delete(); // Deleta a venda
+    await saleRef.delete(); 
+    // Deleta a venda
   } catch (error) {
-    throw { status: 500, message: 'Erro ao deletar venda' };
+    throw { status: 500, message: 'Erro ao deletar venda' }; 
+    // Lança erro genérico em caso de falha
   }
 };
 
-module.exports = { createSale, getSales, updateSale, deleteSale }; // Exporta as funções
+// Exporta as funções para serem utilizadas em outros módulos
+module.exports = { createSale, getSales, updateSale, deleteSale };

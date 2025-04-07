@@ -4,7 +4,8 @@ const admin = require('firebase-admin');
 try {
     // Parseia as credenciais do Firebase a partir da variável de ambiente
     const serviceAccount = JSON.parse(process.env.FIREBASE_CREDENTIALS);
-    console.log('Service Account:', serviceAccount); // Adicione este log
+    console.log('Service Account:', serviceAccount); 
+    // Exibe as credenciais logadas no terminal.
 
     // Inicialização do Firebase Admin
     admin.initializeApp({
@@ -18,4 +19,5 @@ try {
 
 } catch (error) {
     console.error('Erro ao inicializar o Firebase Admin:', error);
+    // Captura erros
 }
