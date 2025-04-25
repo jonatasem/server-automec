@@ -4,7 +4,7 @@
 
 ![Banner do Projeto](./public/api-docs-automec.png)
 
-Esta é uma API para gerenciamento de produtos, clientes e vendas. A API foi construída usando Node.js e Express, e utiliza o Firestore como banco de dados. A documentação da API é gerada automaticamente usando o Swagger UI.
+Esta é uma API para gerenciamento de produtos, clientes e vendas. A API foi construída usando Node.js e Express, e utiliza o Firestore como banco de dados. A documentação da API é gerada usando o Swagger UI.
 
 ## Índice
 
