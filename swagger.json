@@ -1,0 +1,311 @@
+{
+    "swagger": "2.0",
+    "info": {
+      "version": "1.0.0",
+      "title": "API de Gestão",
+      "description": "API para gerenciamento de produtos, clientes e vendas. A API foi construída usando Node.js e Express, e utiliza o Firestore como banco de dados."
+    },
+    "host": "localhost:5000",
+    "basePath": "/api",
+    "schemes": [
+      "http"
+    ],
+    "paths": {
+      "/produtos": {
+        "get": {
+          "summary": "Lista todos os produtos",
+          "responses": {
+            "200": {
+              "description": "Lista de produtos retornada com sucesso"
+            }
+          }
+        },
+        "post": {
+          "summary": "Cria um novo produto",
+          "parameters": [
+            {
+              "name": "produto",
+              "in": "body",
+              "description": "Dados do produto a ser criado",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/Produto"
+              }
+            }
+          ],
+          "responses": {
+            "201": {
+              "description": "Produto criado com sucesso"
+            }
+          }
+        }
+      },
+      "/produtos/{id}": {
+        "put": {
+          "summary": "Atualiza um produto existente",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "produto",
+              "in": "body",
+              "description": "Dados do produto a ser atualizado",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/Produto"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Produto atualizado com sucesso"
+            }
+          }
+        },
+        "delete": {
+          "summary": "Deleta um produto",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "responses": {
+            "204": {
+              "description": "Produto deletado com sucesso"
+            }
+          }
+        }
+      },
+      "/clientes": {
+        "get": {
+          "summary": "Lista todos os clientes",
+          "responses": {
+            "200": {
+              "description": "Lista de clientes retornada com sucesso"
+            }
+          }
+        },
+        "post": {
+          "summary": "Cria um novo cliente",
+          "parameters": [
+            {
+              "name": "cliente",
+              "in": "body",
+              "description": "Dados do cliente a ser criado",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/Cliente"
+              }
+            }
+          ],
+          "responses": {
+            "201": {
+              "description": "Cliente criado com sucesso"
+            }
+          }
+        }
+      },
+      "/clientes/{id}": {
+        "put": {
+          "summary": "Atualiza um cliente existente",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "cliente",
+              "in": "body",
+              "description": "Dados do cliente a ser atualizado",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/Cliente"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Cliente atualizado com sucesso"
+            }
+          }
+        },
+        "delete": {
+          "summary": "Deleta um cliente",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "responses": {
+            "204": {
+              "description": "Cliente deletado com sucesso"
+            }
+          }
+        }
+      },
+      "/vendas": {
+        "get": {
+          "summary": "Lista todas as vendas",
+          "responses": {
+            "200": {
+              "description": "Lista de vendas retornada com sucesso"
+            }
+          }
+        },
+        "post": {
+          "summary": "Cria uma nova venda",
+          "parameters": [
+            {
+              "name": "venda",
+              "in": "body",
+              "description": "Dados da venda a ser criada",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/Venda"
+              }
+            }
+          ],
+          "responses": {
+            "201": {
+              "description": "Venda criada com sucesso"
+            }
+          }
+        }
+      },
+      "/vendas/{id}": {
+        "put": {
+          "summary": "Atualiza uma venda existente",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "venda",
+              "in": "body",
+              "description": "Dados da venda a ser atualizada",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/Venda"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Venda atualizada com sucesso"
+            }
+          }
+        },
+        "delete": {
+          "summary": "Deleta uma venda",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "responses": {
+            "204": {
+              "description": "Venda deletada com sucesso"
+            }
+          }
+        }
+      }
+    },
+    "definitions": {
+      "Produto": {
+        "type": "object",
+        "properties": {
+          "nome": {
+            "type": "string"
+          },
+          "descricao": {
+            "type": "string"
+          },
+          "preco": {
+            "type": "number"
+          },
+          "quantidade": {
+            "type": "integer"
+          }
+        },
+        "required": ["nome", "descricao", "preco"]
+      },
+      "Cliente": {
+        "type": "object",
+        "properties": {
+          "nome": {
+            "type": "string"
+          },
+          "endereco": {
+            "type": "object",
+            "properties": {
+              "rua": {
+                "type": "string"
+              },
+              "numero": {
+                "type": "string"
+              }
+            },
+            "required": ["rua", "numero"]
+          },
+          "documento": {
+            "type": "object",
+            "properties": {
+              "cnpj_cpf": {
+                "type": "string"
+              }
+            },
+            "required": ["cnpj_cpf"]
+          }
+        },
+        "required": ["nome", "endereco", "documento"]
+      },
+      "Venda": {
+        "type": "object",
+        "properties": {
+          "clienteId": {
+            "type": "string"
+          },
+          "data_emissao": {
+            "type": "string",
+            "format": "date"
+          },
+          "data_faturamento": {
+            "type": "string",
+            "format": "date"
+          },
+          "forma_pagamento": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "produtos": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/Produto"
+            }
+          }
+        },
+        "required": ["clienteId", "data_emissao", "produtos"]
+      }
+    }
+  }
+  
